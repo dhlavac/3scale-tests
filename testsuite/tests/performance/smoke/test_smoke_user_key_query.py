@@ -15,7 +15,7 @@ from testsuite import rawobj
 from testsuite.perf_utils import HyperfoilUtils
 
 # Maximal runtime of test (need to cover all performance stages)
-MAX_RUN_TIME = 5 * 60
+MAX_RUN_TIME = 300 * 60
 
 pytestmark = [pytest.mark.performance]
 
@@ -23,7 +23,7 @@ pytestmark = [pytest.mark.performance]
 @pytest.fixture(scope="module")
 def number_of_products():
     """Number of created services (products)"""
-    return 1
+    return 10
 
 
 @pytest.fixture(scope="module")
@@ -35,7 +35,7 @@ def number_of_backends():
 @pytest.fixture(scope="module")
 def number_of_apps():
     """Number of created application for single service (product)"""
-    return 1
+    return 15
 
 
 @pytest.fixture(scope="module")

@@ -33,21 +33,99 @@ phases:
                 sync: true
                 body:
                   fromFile: message_1kb.txt
-  - steadyLoad  :
+  - steadyLoad20M  :
       constantRate:
-        duration: 2m
-        usersPerSec: 20
+        duration: 120m
+        usersPerSec: 115
         maxSessions: 400
         startAfter:
           phase: rampUp
         scenario: *postLargeData
-  - steadyLoadGet:
+  - steadyLoadGet20M:
       constantRate:
-        duration: 2m
-        usersPerSec: 5
+        duration: 120m
+        usersPerSec: 115
         maxSessions: 400
         startAfter:
           phase: rampUp
+        scenario:
+          - getData:
+              - randomCsvRow:
+                  file: 'auth_user_key.csv'
+                  skipComments: true
+                  removeQuotes: true
+                  columns:
+                    0: 0 # hostname
+                    1: 1 # auth_user_key
+                    2: 2 # user_key
+              - randomInt: randomBackend <- 0 .. 9
+              - randomInt: randomPath <- 0 .. 9
+              - template:
+                  pattern: ${1}=${2}
+                  toVar: param
+              - template:
+                  pattern: /${randomBackend}/anything/${randomPath}?${param}
+                  toVar: path
+              - httpRequest:
+                  authority:
+                    fromVar: 0
+                  GET:
+                    fromVar: path
+                  sync: true
+  - steadyLoad30M:
+      constantRate:
+        duration: 120m
+        usersPerSec: 182
+        maxSessions: 400
+        startAfter:
+          phase: steadyLoad20M
+        scenario: *postLargeData
+  - steadyLoadGet30M:
+      constantRate:
+        duration: 120m
+        usersPerSec: 182
+        maxSessions: 400
+        startAfter:
+          phase: steadyLoadGet20M
+        scenario:
+          - getData:
+              - randomCsvRow:
+                  file: 'auth_user_key.csv'
+                  skipComments: true
+                  removeQuotes: true
+                  columns:
+                    0: 0 # hostname
+                    1: 1 # auth_user_key
+                    2: 2 # user_key
+              - randomInt: randomBackend <- 0 .. 9
+              - randomInt: randomPath <- 0 .. 9
+              - template:
+                  pattern: ${1}=${2}
+                  toVar: param
+              - template:
+                  pattern: /${randomBackend}/anything/${randomPath}?${param}
+                  toVar: path
+              - httpRequest:
+                  authority:
+                    fromVar: 0
+                  GET:
+                    fromVar: path
+                  sync: true
+  - steadyLoad40M:
+      constantRate:
+        duration: 120m
+        usersPerSec: 232
+        maxSessions: 400
+        startAfter:
+          phase: steadyLoad30M
+        scenario: *postLargeData
+  - steadyLoadGet40M:
+      constantRate:
+        duration: 120m
+        usersPerSec: 232
+        maxSessions: 400
+        startAfter:
+          phase: steadyLoadGet30M
         scenario:
           - getData:
               - randomCsvRow:
